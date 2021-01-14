@@ -1,0 +1,19 @@
+local monarch = require "monarch.monarch"
+local xoxo = require "xoxo.xoxo"
+
+function init(self)
+	msg.post("#", "initialize")
+	msg.post("@render:", "clear_color", { color = vmath.vector4(0.1, 0.1, 0.1, 1.0) })
+	xoxo.url = msg.url()
+
+	msg.post("#", "ready")
+end
+
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("ready") then
+		xoxo.ready(function()
+			monarch.show(hash("menu"))
+		end)
+	end
+end

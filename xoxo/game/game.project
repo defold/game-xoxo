@@ -1,0 +1,34 @@
+[project]
+title = XOXO
+dependencies = https://github.com/britzl/gooey/archive/9.1.1.zip,https://github.com/britzl/monarch/archive/3.2.2.zip
+
+[bootstrap]
+main_collection = /hotseat/hotseat.collectionc
+
+[input]
+game_binding = /input/game.input_bindingc
+
+[display]
+width = 640
+height = 1136
+
+[script]
+shared_state = 1
+
+[library]
+include_dirs = fbinstant
+
+[native_extension]
+app_manifest = /tictactoe.appmanifest
+
+[graphics]
+texture_profiles = /tictactoe.texture_profiles
+
+[collection_proxy]
+max_count = 9
+
+[html5]
+scale_mode = stretch
+show_fullscreen_button = 0
+show_made_with_defold = 0
+

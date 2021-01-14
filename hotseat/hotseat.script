@@ -1,0 +1,63 @@
+local xoxo = require "xoxo.xoxo"
+local game = require "xoxo.game"
+
+
+local PLAYER1 = {
+	name = "Player 1",
+	id = 1,
+}
+local PLAYER2 = {
+	name = "Player 2",
+	id = 2,
+}
+
+
+function init(self)
+	msg.post(".", "acquire_input_focus")
+	msg.post("#collectionproxy", "async_load")
+
+	game.delete()
+	local state = game.load()
+	if not state then
+		game.new_game(PLAYER1, PLAYER2)
+	end
+
+	xoxo.on_select_opponent(function(callback)
+		print("on select opponent")
+		callback(game.get_opponent())
+	end)
+
+	xoxo.on_ready(function(callback)
+		print("hotseat on ready")
+		callback()
+	end)
+
+	xoxo.on_get_opponent(function(callback)
+		callback(game.get_opponent())
+	end)
+
+	xoxo.on_load_game(function(callback)
+		print("hotseat on load game")
+		callback(game.load(), game.get_player(), game.get_opponent())
+	end)
+
+	xoxo.on_request_rematch(function(callback)
+		print("hotseat on request rematch")
+		game.new_game(PLAYER1, PLAYER2)
+		callback(game.get_state(), game.get_player(), game.get_opponent())
+	end)
+	
+	xoxo.on_player_move(function(row, col, callback)
+		print("player move!")
+		game.player_move(row, col)
+		game.dump()
+		callback(game.get_state(), game.get_player(), game.get_opponent())
+	end)
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("proxy_loaded") then
+		msg.post(sender, "init")
+		msg.post(sender, "enable")
+	end
+end
