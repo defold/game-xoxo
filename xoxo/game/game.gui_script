@@ -84,7 +84,7 @@ local function update_game(game, player, opponent)
 	end
 end
 
-local function play_in_cell(self, index)
+local function play_in_cell(index)
 	msg.post(".", "release_input_focus")
 	update_message("Sending your move")
 
@@ -95,13 +95,12 @@ local function play_in_cell(self, index)
 end
 
 
-
-local function reset_cells(self)
-	self.cells = {}
+local function start_game(game, player, opponent)
 	for i=1,9 do
-		self.cells[i] = gui.get_node("cell" .. i)
-		gui.set_enabled(self.cells[i], false)
+		gui.set_enabled(gui.get_node("cell" .. i), false)
 	end
+	update_game(game, player, opponent)
+	show_players(game, player, opponent)
 end
 
 function init(self)
@@ -128,31 +127,18 @@ function init(self)
 	update_message("")
 	
 	xoxo.load_game(function(game, player, opponent)
-		reset_cells(self)
-		update_game(game, player, opponent)
-		show_players(game, player, opponent)
-	end)
-end
-
-
-function on_message(self, message_id, message, sender)
-	if message_id == hash("trigger_response") and message.group == hash("cell") then
-		if message.enter then
-			self.over_cell = message.other_id
-		elseif self.over_cell == message.other_id then
-			self.over_cell = nil
+		if game then
+			start_game(game, player, opponent)
 		end
-	end
+	end)
 end
 
 
 function on_input(self, action_id, action)
 	if action_id == hash("touch") and action.released then
 		for i=1,9 do
-			local cell = self.cells[i]
-			if cell and gui.pick_node(cell, action.x, action.y) then
-				self.cells[i] = nil
-				play_in_cell(self, i)
+			if gui.pick_node(gui.get_node("cell" .. i), action.x, action.y) then
+				play_in_cell(i)
 				return true
 			end
 		end
@@ -162,9 +148,7 @@ function on_input(self, action_id, action)
 		msg.post(".", "release_input_focus")
 		xoxo.request_rematch(function(game, player, opponent)
 			if game then
-				reset_cells(self)
-				update_game(game, player, opponent)
-				show_players(game, player, opponent)
+				start_game(game, player, opponent)
 			end
 		end)
 	end)

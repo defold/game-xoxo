@@ -100,11 +100,16 @@ end
 
 function M.player_move(row, column)
 	assert(state)
-	state.cells[row][column] = state.player_turn
-	state.player_turn = (state.player_turn == 1) and 2 or 1
-	state.draw = check_draw()
-	state.winner = check_winner()
-	M.save()
+	if state.cells[row][column] == -1 then
+		state.cells[row][column] = state.player_turn
+		state.player_turn = (state.player_turn == 1) and 2 or 1
+		state.draw = check_draw()
+		state.winner = check_winner()
+		M.save()
+		return true
+	else
+		return false
+	end
 end
 
 function M.get_player()

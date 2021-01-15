@@ -6,7 +6,7 @@ dependencies = https://github.com/britzl/gooey/archive/9.1.1.zip,https://github.
 main_collection = /hotseat/hotseat.collectionc
 
 [input]
-game_binding = /input/game.input_bindingc
+game_binding = /xoxo/input/game.input_bindingc
 
 [display]
 width = 640
