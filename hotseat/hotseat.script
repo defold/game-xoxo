@@ -1,14 +1,16 @@
 local xoxo = require "xoxo.xoxo"
-local game = require "xoxo.game"
+local hotseat = require "hotseat.hotseat"
 
 
 local PLAYER1 = {
 	name = "Player 1",
 	id = 1,
+	photo = "https://randomuser.me/api/portraits/med/lego/6.jpg",
 }
 local PLAYER2 = {
 	name = "Player 2",
 	id = 2,
+	photo = "https://randomuser.me/api/portraits/med/lego/7.jpg",
 }
 
 
@@ -16,42 +18,33 @@ function init(self)
 	msg.post(".", "acquire_input_focus")
 	msg.post("#collectionproxy", "async_load")
 
-	game.delete()
-	local state = game.load()
+	hotseat.delete()
+	local state = hotseat.load()
 	if not state then
-		game.new_game(PLAYER1, PLAYER2)
+		hotseat.new_game(PLAYER1, PLAYER2)
 	end
 
-	xoxo.on_select_opponent(function(callback)
-		print("on select opponent")
-		callback(game.get_opponent())
+	xoxo.on_request_opponent(function(callback)
+		print("hotseat on_request_opponent")
+		callback(hotseat.get_opponent())
 	end)
 
-	xoxo.on_ready(function(callback)
-		print("hotseat on ready")
-		callback()
-	end)
-
-	xoxo.on_get_opponent(function(callback)
-		callback(game.get_opponent())
-	end)
-
-	xoxo.on_load_game(function(callback)
-		print("hotseat on load game")
-		callback(game.load(), game.get_player(), game.get_opponent())
+	xoxo.on_request_game_state(function(callback)
+		print("hotseat on_request_game_state")
+		callback(hotseat.load(), hotseat.get_player(), hotseat.get_opponent())
 	end)
 
 	xoxo.on_request_rematch(function(callback)
-		print("hotseat on request rematch")
-		game.new_game(PLAYER1, PLAYER2)
-		callback(game.get_state(), game.get_player(), game.get_opponent())
+		print("hotseat on_request_rematch")
+		hotseat.new_game(PLAYER1, PLAYER2)
+		callback(hotseat.get_state(), hotseat.get_player(), hotseat.get_opponent())
 	end)
 	
-	xoxo.on_player_move(function(row, col, callback)
-		print("player move!")
-		game.player_move(row, col)
-		game.dump()
-		callback(game.get_state(), game.get_player(), game.get_opponent())
+	xoxo.on_send_player_move(function(row, col, callback)
+		print("hotseat on_send_player_move")
+		hotseat.player_move(row, col)
+		hotseat.dump()
+		callback(hotseat.get_state(), hotseat.get_player(), hotseat.get_opponent())
 	end)
 end
 

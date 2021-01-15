@@ -3,50 +3,18 @@ local gooey = require "gooey.gooey"
 local xoxo = require "xoxo.xoxo"
 
 
-local function show_select_opponent_button(self)
-	gui.set_enabled(gui.get_node("select_opponent/bg"), true)
-	gui.set_enabled(gui.get_node("play/bg"), false)
-end
-
-
-local function show_play_button(self)
-	gui.set_enabled(gui.get_node("select_opponent/bg"), false)
-	gui.set_enabled(gui.get_node("play/bg"), true)
-end
-
-local function table_contains(table, element)
-	for _, value in pairs(table) do
-		if value == element then
-			return true
-		end
-	end
-	return false
-end
-
-
-
 function init(self)
 	gui.set_render_order(15)
 
-	xoxo.get_opponent(function(opponent)
+	xoxo.request_opponent(function(opponent)
 		msg.post(".", "acquire_input_focus")
-		if opponent then
-			show_play_button(self)
-		else
-			show_select_opponent_button(self)
-		end
+		gui.set_enabled(gui.get_node("play/bg"), opponent)
 	end)
 end
 
 
 function on_input(self, action_id, action)
-	gooey.button("select_opponent/bg", action_id, action, function()
-		xoxo.select_opponent(function(opponent)
-			print("xoxo opponent", opponent)
-			monarch.show(hash("game"), nil, { opponent = opponent })
-		end)
-	end)
 	gooey.button("play/bg", action_id, action, function()
-		monarch.show(hash("game"), nil, { context_id = self.context_id })
+		monarch.show(hash("game"))
 	end)
 end

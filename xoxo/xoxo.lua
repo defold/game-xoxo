@@ -1,46 +1,30 @@
 local M = {}
 
-local on_ready_fn
-function M.on_ready(fn)
-	on_ready_fn = fn
-end
-function M.ready(callback)
-	on_ready_fn(callback)
-end
 
-local on_select_opponent_fn
-function M.on_select_opponent(fn)
-	on_select_opponent_fn = fn
+local on_request_opponent_fn
+function M.on_request_opponent(fn)
+	on_request_opponent_fn = fn
 end
-function M.select_opponent(callback)
-	on_select_opponent_fn(callback)
+function M.request_opponent(callback)
+	on_request_opponent_fn(callback)
 end
 
 
-local on_get_opponent_fn
-function M.on_get_opponent(fn)
-	on_get_opponent_fn = fn
+local on_request_game_state_fn
+function M.on_request_game_state(fn)
+	on_request_game_state_fn = fn
 end
-function M.get_opponent(callback)
-	on_get_opponent_fn(callback)
-end
-
-
-local on_load_game_fn
-function M.on_load_game(fn)
-	on_load_game_fn = fn
-end
-function M.load_game(callback)
-	on_load_game_fn(callback)
+function M.request_game_state(callback)
+	on_request_game_state_fn(callback)
 end
 
 
-local on_player_move_fn
-function M.on_player_move(fn)
-	on_player_move_fn = fn
+local on_send_player_move_fn
+function M.on_send_player_move(fn)
+	on_send_player_move_fn = fn
 end
-function M.player_move(row, column, callback)
-	on_player_move_fn(row, column, callback)
+function M.send_player_move(row, column, callback)
+	on_send_player_move_fn(row, column, callback)
 end
 
 
