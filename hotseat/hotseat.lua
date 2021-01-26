@@ -24,14 +24,14 @@ function M.delete()
 	sys.save(filename(), {})
 end
 
-
-function M.reset()
-	gamestate.reset()
+function M.new_game()
+	state = gamestate.new_game()
+	M.save()
+	return state
 end
 
-
-function M.new_game(player1, player2)
-	state = gamestate.new_game(player1, player2)
+function M.add_player(player)
+	gamestate.add_player(state, player)
 	M.save()
 	return state
 end

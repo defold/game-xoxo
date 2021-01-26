@@ -53,7 +53,7 @@ local function check_draw(state)
 end
 
 
-function M.new_game(player1, player2)
+function M.new_game()
 	local state = {
 		cells = {
 			{ -1, -1, -1 },
@@ -61,16 +61,20 @@ function M.new_game(player1, player2)
 			{ -1, -1, -1 },
 		},
 		players = {},
-		player_turn = -1,
 	}
-	state.players[1] = player1
-	state.players[2] = player2
 	state.player_turn = 1
 	return state
 end
 
+function M.add_player(state, player)
+	assert(state)
+	assert(#state.players < 2, "Game already has two players")
+	state.players[#state.players + 1] = player
+end
+
 function M.player_move(state, row, column)
 	assert(state)
+	assert(#state.players == 2, "Game must have two players before a move can be made")
 	if state.cells[row][column] == -1 then
 		state.cells[row][column] = state.player_turn
 		state.player_turn = (state.player_turn == 1) and 2 or 1
@@ -84,11 +88,13 @@ end
 
 function M.get_player(state)
 	assert(state)
+	assert(#state.players == 2, "Game must have two players!")
 	return state.players[state.player_turn]
 end
 
 function M.get_opponent(state)
 	assert(state)
+	assert(#state.players == 2, "Game must have two players!")
 	return state.players[(state.player_turn == 1) and 2 or 1]
 end
 

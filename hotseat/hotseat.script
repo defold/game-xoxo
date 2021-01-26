@@ -21,7 +21,9 @@ function init(self)
 	hotseat.delete()
 	local state = hotseat.load()
 	if not state then
-		hotseat.new_game(PLAYER1, PLAYER2)
+		hotseat.new_game()
+		hotseat.add_player(PLAYER1)
+		hotseat.add_player(PLAYER2)
 	end
 
 	xoxo.on_request_opponent(function(callback)
@@ -36,7 +38,9 @@ function init(self)
 
 	xoxo.on_request_rematch(function(callback)
 		print("hotseat on_request_rematch")
-		hotseat.new_game(PLAYER1, PLAYER2)
+		hotseat.new_game()
+		hotseat.add_player(PLAYER1)
+		hotseat.add_player(PLAYER2)
 		callback(hotseat.get_state(), hotseat.get_player(), hotseat.get_opponent())
 	end)
 	
