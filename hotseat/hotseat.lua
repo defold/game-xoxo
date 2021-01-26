@@ -2,21 +2,22 @@ local gamestate = require "xoxo.game.state"
 
 local M = {}
 
+local state = nil
+
 local function filename()
 	return sys.get_save_file("xoxo", "save")
 end
 
 function M.load()
-	local state = sys.load(filename())
+	state = sys.load(filename())
 	if not next(state) then
 		state = nil
 	end
-	gamestate.set(state)
 	return state
 end
 
 function M.save()
-	sys.save(filename(), gamestate.get())
+	sys.save(filename(), state)
 end
 
 function M.delete()
@@ -30,12 +31,14 @@ end
 
 
 function M.new_game(player1, player2)
-	gamestate.new_game(player1, player2)
+	state = gamestate.new_game(player1, player2)
 	M.save()
+	return state
 end
 
 function M.player_move(row, column)
-	local ok = gamestate.player_move(row, column)
+	assert(state, "No game state exists! Have you loaded or started a new game?")
+	local ok = gamestate.player_move(state, row, column)
 	if ok then
 		M.save()
 	end
@@ -43,19 +46,19 @@ function M.player_move(row, column)
 end
 
 function M.get_player()
-	return gamestate.get_player()
+	return gamestate.get_player(state)
 end
 
 function M.get_opponent()
-	return gamestate.get_opponent()
+	return gamestate.get_opponent(state)
 end
 
 function M.get_state()
-	return gamestate.get()
+	return state
 end
 
 function M.dump()
-	gamestate.dump()
+	gamestate.dump(state)
 end
 
 

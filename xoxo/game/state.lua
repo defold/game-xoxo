@@ -1,8 +1,6 @@
 local M = {}
 
 
-local state = nil
-
 
 local function index_to_row_column(index)
 	local row = math.ceil(index / 3)
@@ -17,7 +15,7 @@ local function check_match(cells)
 	end
 end
 
-local function check_winner()
+local function check_winner(state)
 	local gs = state.cells
 	local match_row =
 	check_match(gs[1]
@@ -43,7 +41,7 @@ local function check_winner()
 end
 
 
-local function check_draw()
+local function check_draw(state)
 	local gs = state.cells
 	for i=1,9 do
 		local row, column = index_to_row_column(i)
@@ -54,8 +52,9 @@ local function check_draw()
 	return true
 end
 
-function M.reset()
-	state = {
+
+function M.new_game(player1, player2)
+	local state = {
 		cells = {
 			{ -1, -1, -1 },
 			{ -1, -1, -1 },
@@ -64,49 +63,36 @@ function M.reset()
 		players = {},
 		player_turn = -1,
 	}
-end
-
-
-function M.new_game(player1, player2)
-	M.reset()
 	state.players[1] = player1
 	state.players[2] = player2
 	state.player_turn = 1
+	return state
 end
 
-function M.player_move(row, column)
+function M.player_move(state, row, column)
 	assert(state)
 	if state.cells[row][column] == -1 then
 		state.cells[row][column] = state.player_turn
 		state.player_turn = (state.player_turn == 1) and 2 or 1
-		state.draw = check_draw()
-		state.winner = check_winner()
+		state.draw = check_draw(state)
+		state.winner = check_winner(state)
 		return true
 	else
 		return false
 	end
 end
 
-function M.get_player()
+function M.get_player(state)
 	assert(state)
 	return state.players[state.player_turn]
 end
 
-function M.get_opponent()
+function M.get_opponent(state)
 	assert(state)
 	return state.players[(state.player_turn == 1) and 2 or 1]
 end
 
-function M.get()
-	assert(state)
-	return state
-end
-
-function M.set(new_state)
-	state = new_state
-end
-
-function M.dump()
+function M.dump(state)
 	for r=1,3 do
 		local c1 = state.cells[r][1]
 		local c2 = state.cells[r][2]
