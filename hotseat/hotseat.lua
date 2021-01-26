@@ -45,12 +45,12 @@ function M.player_move(row, column)
 	return ok
 end
 
-function M.get_player()
-	return gamestate.get_player(state)
+function M.get_active_player()
+	return gamestate.get_active_player(state)
 end
 
-function M.get_opponent()
-	return gamestate.get_opponent(state)
+function M.get_other_player()
+	return gamestate.get_other_player(state)
 end
 
 function M.get_state()

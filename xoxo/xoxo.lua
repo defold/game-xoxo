@@ -9,20 +9,20 @@ local function wrap(callback)
 end
 
 
-local on_request_opponent_fn
-function M.on_request_opponent(fn)
-	on_request_opponent_fn = fn
+local on_join_match_fn
+function M.on_join_match(fn)
+	on_join_match_fn = fn
 end
-function M.request_opponent(callback)
-	on_request_opponent_fn(wrap(callback))
+function M.join_match(callback)
+	on_join_match_fn(wrap(callback))
 end
 
-local on_request_game_state_fn
-function M.on_request_game_state(fn)
-	on_request_game_state_fn = fn
+local on_request_match_state_fn
+function M.on_request_match_state(fn)
+	on_request_match_state_fn = fn
 end
-function M.request_game_state(callback)
-	on_request_game_state_fn(wrap(callback))
+function M.request_match_state(callback)
+	on_request_match_state_fn(wrap(callback))
 end
 
 local on_send_player_move_fn

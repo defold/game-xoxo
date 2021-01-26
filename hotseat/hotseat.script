@@ -18,22 +18,22 @@ function init(self)
 	msg.post(".", "acquire_input_focus")
 	msg.post("#collectionproxy", "async_load")
 
-	hotseat.delete()
-	local state = hotseat.load()
-	if not state then
-		hotseat.new_game()
-		hotseat.add_player(PLAYER1)
-		hotseat.add_player(PLAYER2)
-	end
 
-	xoxo.on_request_opponent(function(callback)
-		print("hotseat on_request_opponent")
-		callback(hotseat.get_opponent())
+	xoxo.on_join_match(function(callback)
+		print("hotseat on_join_match")
+		hotseat.delete()
+		local state = hotseat.load()
+		if not state then
+			hotseat.new_game()
+			hotseat.add_player(PLAYER1)
+			hotseat.add_player(PLAYER2)
+		end
+		callback(state)
 	end)
 
-	xoxo.on_request_game_state(function(callback)
-		print("hotseat on_request_game_state")
-		callback(hotseat.load(), hotseat.get_player(), hotseat.get_opponent())
+	xoxo.on_request_match_state(function(callback)
+		print("hotseat on_request_match_state")
+		callback(hotseat.load(), hotseat.get_active_player(), hotseat.get_other_player())
 	end)
 
 	xoxo.on_request_rematch(function(callback)
@@ -41,14 +41,14 @@ function init(self)
 		hotseat.new_game()
 		hotseat.add_player(PLAYER1)
 		hotseat.add_player(PLAYER2)
-		callback(hotseat.get_state(), hotseat.get_player(), hotseat.get_opponent())
+		callback(hotseat.get_state(), hotseat.get_active_player(), hotseat.get_other_player())
 	end)
 	
 	xoxo.on_send_player_move(function(row, col, callback)
 		print("hotseat on_send_player_move")
 		hotseat.player_move(row, col)
 		hotseat.dump()
-		callback(hotseat.get_state(), hotseat.get_player(), hotseat.get_opponent())
+		callback(hotseat.get_state(), hotseat.get_active_player(), hotseat.get_other_player())
 	end)
 end
 

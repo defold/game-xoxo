@@ -96,7 +96,7 @@ local function show_rematch()
 end
 
 
-local function update_game(game, player, opponent)
+local function update_game(game, active_player, other_player)
 	update_cells(game)
 	if game.winner then
 		update_message("You won!")
@@ -104,9 +104,9 @@ local function update_game(game, player, opponent)
 	elseif game.draw then
 		update_message("Draw!")
 		show_rematch()
-	elseif (game.players[game.player_turn].id == player.id) then
+	elseif (game.players[game.player_turn].id == active_player.id) then
 		msg.post(".", "acquire_input_focus")
-		update_message(("%s's turn"):format(player.name))
+		update_message(("%s's turn"):format(active_player.name))
 	else
 		update_message("Wait your turn")
 	end
@@ -117,18 +117,18 @@ local function play_in_cell(index)
 	update_message("Sending your move")
 
 	local row, column = index_to_row_column(index)
-	xoxo.send_player_move(row, column, function(game, player, opponent)
-		update_game(game, player, opponent)
+	xoxo.send_player_move(row, column, function(game, active_player, other_player)
+		update_game(game, active_player, other_player)
 	end)
 end
 
 
-local function start_game(game, player, opponent)
+local function start_game(game, active_player, other_player)
 	for i=1,9 do
 		gui.set_enabled(gui.get_node("cell" .. i), false)
 	end
-	update_game(game, player, opponent)
-	show_players(game, player, opponent)
+	update_game(game, active_player, other_player)
+	show_players(game, active_player, other_player)
 end
 
 function init(self)
@@ -154,9 +154,9 @@ function init(self)
 
 	update_message("")
 	
-	xoxo.request_game_state(function(game, player, opponent)
+	xoxo.request_match_state(function(game, active_player, other_player)
 		if game then
-			start_game(game, player, opponent)
+			start_game(game, active_player, other_player)
 		end
 	end)
 end
@@ -168,9 +168,9 @@ function on_input(self, action_id, action)
 		gooey.button("rematch/bg", action_id, action, function()
 			gui.set_enabled(rematch, false)
 			msg.post(".", "release_input_focus")
-			xoxo.request_rematch(function(game, player, opponent)
+			xoxo.request_rematch(function(game, active_player, other_player)
 				if game then
-					start_game(game, player, opponent)
+					start_game(game, active_player, other_player)
 				end
 			end)
 		end)

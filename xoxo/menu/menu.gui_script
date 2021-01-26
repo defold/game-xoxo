@@ -8,9 +8,9 @@ function init(self)
 
 	local play_button = gui.get_node("play/bg")
 	gui.set_enabled(play_button, false)
-	xoxo.request_opponent(function(opponent)
+	xoxo.join_match(function()
 		msg.post(".", "acquire_input_focus")
-		gui.set_enabled(play_button, (opponent ~= nil))
+		gui.set_enabled(play_button, true)
 	end)
 end
 

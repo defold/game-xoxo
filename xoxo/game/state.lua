@@ -16,25 +16,25 @@ local function check_match(cells)
 end
 
 local function check_winner(state)
-	local gs = state.cells
+	local cells = state.cells
 	local match_row =
-	check_match(gs[1]
-	or check_match(gs[2])
-	or check_match(gs[3]))
+	check_match(cells[1]
+	or check_match(cells[2])
+	or check_match(cells[3]))
 
 	local match_column =
 	-- down
-	check_match({ gs[1][1], gs[2][1], gs[3][1] })
-	or check_match({ gs[1][2], gs[2][2], gs[3][2] })
-	or check_match({ gs[1][3], gs[2][3], gs[3][3] })
+	check_match({ cells[1][1], cells[2][1], cells[3][1] })
+	or check_match({ cells[1][2], cells[2][2], cells[3][2] })
+	or check_match({ cells[1][3], cells[2][3], cells[3][3] })
 	-- across
-	or check_match({ gs[1][1], gs[1][2], gs[1][3] })
-	or check_match({ gs[2][1], gs[2][2], gs[2][3] })
-	or check_match({ gs[3][1], gs[3][2], gs[3][3] })
+	or check_match({ cells[1][1], cells[1][2], cells[1][3] })
+	or check_match({ cells[2][1], cells[2][2], cells[2][3] })
+	or check_match({ cells[3][1], cells[3][2], cells[3][3] })
 
 	local match_cross =
-	check_match({ gs[1][1], gs[2][2], gs[3][3] })
-	or check_match({ gs[3][1], gs[2][2], gs[1][3] })
+	check_match({ cells[1][1], cells[2][2], cells[3][3] })
+	or check_match({ cells[3][1], cells[2][2], cells[1][3] })
 
 	local won = match_row or match_column or match_cross
 	return won
@@ -42,10 +42,10 @@ end
 
 
 local function check_draw(state)
-	local gs = state.cells
+	local cells = state.cells
 	for i=1,9 do
 		local row, column = index_to_row_column(i)
-		if gs[row][column] == -1 then
+		if cells[row][column] == -1 then
 			return false
 		end
 	end
@@ -66,10 +66,14 @@ function M.new_game()
 	return state
 end
 
-function M.add_player(state, player)
+function M.add_player(state, player_id)
 	assert(state)
 	assert(#state.players < 2, "Game already has two players")
-	state.players[#state.players + 1] = player
+	assert(player_id)
+	if #state.players == 1 then
+		assert(state.players[1] ~= player_id, "The player has already been added to the match")
+	end
+	state.players[#state.players + 1] = player_id
 end
 
 function M.player_move(state, row, column)
@@ -80,19 +84,19 @@ function M.player_move(state, row, column)
 		state.player_turn = (state.player_turn == 1) and 2 or 1
 		state.draw = check_draw(state)
 		state.winner = check_winner(state)
-		return true
+		return true, state
 	else
-		return false
+		return false, state
 	end
 end
 
-function M.get_player(state)
+function M.get_active_player(state)
 	assert(state)
 	assert(#state.players == 2, "Game must have two players!")
 	return state.players[state.player_turn]
 end
 
-function M.get_opponent(state)
+function M.get_other_player(state)
 	assert(state)
 	assert(#state.players == 2, "Game must have two players!")
 	return state.players[(state.player_turn == 1) and 2 or 1]
