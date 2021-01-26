@@ -6,9 +6,11 @@ local xoxo = require "xoxo.xoxo"
 function init(self)
 	gui.set_render_order(15)
 
+	local play_button = gui.get_node("play/bg")
+	gui.set_enabled(play_button, false)
 	xoxo.request_opponent(function(opponent)
 		msg.post(".", "acquire_input_focus")
-		gui.set_enabled(gui.get_node("play/bg"), opponent)
+		gui.set_enabled(play_button, (opponent ~= nil))
 	end)
 end
 
