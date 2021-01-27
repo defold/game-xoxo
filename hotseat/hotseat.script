@@ -33,7 +33,7 @@ function init(self)
 
 	xoxo.on_request_match_state(function(callback)
 		print("hotseat on_request_match_state")
-		callback(hotseat.load(), hotseat.get_active_player(), hotseat.get_other_player())
+		callback(hotseat.load(), hotseat.get_active_player(), hotseat.get_other_player(), true)
 	end)
 
 	xoxo.on_request_rematch(function(callback)
@@ -41,14 +41,14 @@ function init(self)
 		hotseat.new_game()
 		hotseat.add_player(PLAYER1)
 		hotseat.add_player(PLAYER2)
-		callback(hotseat.get_state(), hotseat.get_active_player(), hotseat.get_other_player())
+		callback(hotseat.get_state(), hotseat.get_active_player(), hotseat.get_other_player(), true)
 	end)
 	
 	xoxo.on_send_player_move(function(row, col, callback)
 		print("hotseat on_send_player_move")
 		hotseat.player_move(row, col)
 		hotseat.dump()
-		callback(hotseat.get_state(), hotseat.get_active_player(), hotseat.get_other_player())
+		callback(hotseat.get_state(), hotseat.get_active_player(), hotseat.get_other_player(), true)
 	end)
 end
 
