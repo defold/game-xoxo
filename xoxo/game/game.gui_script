@@ -60,12 +60,11 @@ local function refresh_player(player, photo_node, name_node, texture_id)
 end
 
 
-local function show_players(game, active_player, other_player, your_turn)
+local function update_players(game, active_player, other_player, your_turn)
 	pprint(game)
 	refresh_player(game.players[1], gui.get_node("player1_photo"), gui.get_node("player1_name"), TEXTURE1_ID)
 	refresh_player(game.players[2], gui.get_node("player2_photo"), gui.get_node("player2_name"), TEXTURE2_ID)
 end
-
 
 local function update_cells(game)
 	for i=1,9 do
@@ -113,19 +112,9 @@ local function play_in_cell(index)
 	update_message("Sending your move")
 
 	local row, column = index_to_row_column(index)
-	xoxo.send_player_move(row, column, function(game, active_player, other_player, your_turn)
-		update_game(game, active_player, other_player, your_turn)
-	end)
+	xoxo.send_player_move(row, column)
 end
 
-
-local function start_game(game, active_player, other_player, your_turn)
-	for i=1,9 do
-		gui.set_enabled(gui.get_node("cell" .. i), false)
-	end
-	update_game(game, active_player, other_player, your_turn)
-	show_players(game, active_player, other_player, your_turn)
-end
 
 function init(self)
 	gui.set_render_order(15)
@@ -150,10 +139,9 @@ function init(self)
 
 	update_message("")
 	
-	xoxo.request_match_state(function(game, active_player, other_player, your_turn)
-		if game then
-			start_game(game, active_player, other_player, your_turn)
-		end
+	xoxo.on_match_update(function(game, active_player, other_player, your_turn)
+		update_game(game, active_player, other_player, your_turn)
+		update_players(game, active_player, other_player, your_turn)
 	end)
 end
 
@@ -164,11 +152,7 @@ function on_input(self, action_id, action)
 		gooey.button("rematch/bg", action_id, action, function()
 			gui.set_enabled(rematch, false)
 			msg.post(".", "release_input_focus")
-			xoxo.request_rematch(function(game, active_player, other_player, your_turn)
-				if game then
-					start_game(game, active_player, other_player, your_turn)
-				end
-			end)
+			xoxo.request_rematch()
 		end)
 	else
 		if action_id == hash("touch") and action.released then
