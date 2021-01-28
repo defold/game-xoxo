@@ -40,8 +40,7 @@ function init(self)
 	-- client has sent a move
 	xoxo.on_send_player_move(function(row, col)
 		print("hotseat on_send_player_move")
-		local ok, state = hotseat.player_move(row, col)
-		xoxo.match_update(state, hotseat.get_active_player(), hotseat.get_other_player(), true)
+		local state = hotseat.player_move(row, col)
 
 		-- start rematch countdown if the game is completed (win or draw)
 		if state.winner or state.draw then
@@ -56,6 +55,7 @@ function init(self)
 				end
 			end)
 		end
+		xoxo.match_update(state, hotseat.get_active_player(), hotseat.get_other_player(), true)
 	end)
 end
 

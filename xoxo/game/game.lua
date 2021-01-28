@@ -92,9 +92,9 @@ function M.player_move(state, row, column)
 		else
 			state.winner = false
 		end
-		return true, state
+		return state, true
 	else
-		return false, state
+		return state, false
 	end
 end
 
