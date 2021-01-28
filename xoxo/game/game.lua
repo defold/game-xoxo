@@ -50,18 +50,26 @@ local function check_draw(state)
 	return true
 end
 
-
-function M.new_game()
-	local state = {
+local function create_state(players)
+	return {
 		cells = {
 			{ -1, -1, -1 },
 			{ -1, -1, -1 },
 			{ -1, -1, -1 },
 		},
-		players = {},
+		players = players or {},
+		player_turn = 1,
 	}
-	state.player_turn = 1
-	return state
+end
+
+function M.new_game()
+	return create_state()
+end
+
+function M.rematch(state)
+	assert(state)
+	assert(#state.players == 2, "Game must have two players")
+	return create_state(state.players)
 end
 
 function M.add_player(state, player_id)
@@ -72,6 +80,7 @@ function M.add_player(state, player_id)
 		assert(state.players[1] ~= player_id, "The player has already been added to the match")
 	end
 	state.players[#state.players + 1] = player_id
+	return state
 end
 
 function M.player_count(state)

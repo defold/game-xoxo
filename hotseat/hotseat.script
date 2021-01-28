@@ -27,7 +27,10 @@ function init(self)
 	-- client has requested to join a match
 	xoxo.on_join_match(function(callback)
 		print("hotseat on_join_match")
-		start_new_game()
+		hotseat.new_game()
+		hotseat.add_player(PLAYER1)
+		hotseat.add_player(PLAYER2)
+		xoxo.match_update(hotseat.state(), hotseat.get_active_player(), hotseat.get_other_player(), true)
 		callback(true)
 	end)
 
@@ -49,7 +52,8 @@ function init(self)
 				state.rematch_countdown = state.rematch_countdown - time_elapsed
 				if state.rematch_countdown <= 0 then
 					timer.cancel(handle)
-					start_new_game()
+					hotseat.rematch()
+					xoxo.match_update(hotseat.state(), hotseat.get_active_player(), hotseat.get_other_player(), true)
 				else
 					xoxo.match_update(state, hotseat.get_active_player(), hotseat.get_other_player(), true)
 				end

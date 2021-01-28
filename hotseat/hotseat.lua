@@ -9,6 +9,11 @@ function M.new_game()
 	return state
 end
 
+function M.rematch()
+	state = game.rematch(state)
+	return state
+end
+
 function M.add_player(player)
 	game.add_player(state, player)
 	return state
