@@ -10,10 +10,13 @@ end
 
 
 local on_join_match_fn
+-- called by backend proxy to subscribe to match join requests
 function M.on_join_match(fn)
 	on_join_match_fn = fn
 end
+-- called by xoxo when player wants to join a match
 function M.join_match(callback)
+	assert(on_join_match_fn, "You must call xoxo.on_join_match() from your backend proxy")
 	callback = wrap(callback)
 	on_join_match_fn(function(success, message)
 		assert(success ~= nil)
@@ -22,9 +25,22 @@ function M.join_match(callback)
 	end)
 end
 
+
+local on_leave_match_fn
+-- called by backend proxy to subscribe to match leave requests
+function M.on_leave_match(fn)
+	on_leave_match_fn = fn
+end
+-- called by xoxo when player wants to leave a match
+function M.leave_match()
+	assert(on_leave_match_fn, "You must call xoxo.on_leave_match() from your backend proxy")
+	on_leave_match_fn()
+end
+
+
 local match_update = nil
 local on_match_update_fn
--- from server to client
+-- called by backend proxy when match state has changed
 function M.match_update(state, active_player, other_player, your_turn)
 	assert(state)
 	assert(active_player)
@@ -40,8 +56,12 @@ function M.match_update(state, active_player, other_player, your_turn)
 		on_match_update_fn(state, active_player, other_player, your_turn)
 	end
 end
--- client to server
+-- called by xoxo to subscribe to match state changes
 function M.on_match_update(callback)
+	if not callback then
+		on_match_update_fn = nil
+		return
+	end
 	on_match_update_fn = wrap(callback)
 	if match_update then
 		on_match_update_fn(
@@ -52,25 +72,32 @@ function M.on_match_update(callback)
 	end
 end
 
+local on_opponent_left_fn = nil
+-- called by backend proxy when opponent left match
+function M.opponent_left()
+	if on_opponent_left_fn then
+		on_opponent_left_fn()
+	end
+end
+-- called by xoxo to subscribe to when the opponent leaves a match 
+function M.on_opponent_left(callback)
+	if not callback then
+		on_opponent_left_fn = nil
+		return
+	end
+	on_opponent_left_fn = wrap(callback)
+end
+
+
 local on_send_player_move_fn
--- server to client
+-- called by backend proxy to subscribe to player move attempts
 function M.on_send_player_move(fn)
 	on_send_player_move_fn = fn
 end
--- client to server
+-- called by xoxo when the player wants to send a move
 function M.send_player_move(row, column)
+	assert(on_send_player_move_fn, "You must call xoxo.on_send_player_move() from your backend proxy")
 	on_send_player_move_fn(row, column)
 end
-
-local on_request_rematch_fn
--- server to client
-function M.on_request_rematch(fn)
-	on_request_rematch_fn = fn
-end
--- client to server
-function M.request_rematch()
-	on_request_rematch_fn()
-end
-
 
 return M

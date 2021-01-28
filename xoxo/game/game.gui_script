@@ -61,7 +61,6 @@ end
 
 
 local function update_players(game, active_player, other_player, your_turn)
-	pprint(game)
 	refresh_player(game.players[1], gui.get_node("player1_photo"), gui.get_node("player1_name"), TEXTURE1_ID)
 	refresh_player(game.players[2], gui.get_node("player2_photo"), gui.get_node("player2_name"), TEXTURE2_ID)
 end
@@ -85,20 +84,19 @@ local function update_cells(game)
 end
 
 
-local function show_rematch()
+local function show_game_over(message, rematch_countdown)
 	msg.post(".", "acquire_input_focus")
-	gui.set_enabled(gui.get_node("rematch/bg"), true)
+	gui.set_enabled(gui.get_node("leave/bg"), true)
+	update_message(("%s - New match starting in %d seconds"):format(message, math.ceil(rematch_countdown)))
 end
 
 
 local function update_game(game, active_player, other_player, your_turn)
 	update_cells(game)
 	if game.winner then
-		update_message("You won!")
-		show_rematch()
+		show_game_over("You won!", game.rematch_countdown)
 	elseif game.draw then
-		update_message("Draw!")
-		show_rematch()
+		show_game_over("Draw!", game.rematch_countdown)
 	elseif your_turn then
 		msg.post(".", "acquire_input_focus")
 		update_message("Your turn")
@@ -135,24 +133,42 @@ function init(self)
 	gui.set_enabled(player1_photo, false)
 	gui.set_texture(player2_photo, TEXTURE2_ID)
 	gui.set_enabled(player2_photo, false)
-	gui.set_enabled(gui.get_node("rematch/bg"), false)
 
 	update_message("")
-	
+	gui.set_enabled(gui.get_node("leave/bg"), false)
+		
 	xoxo.on_match_update(function(game, active_player, other_player, your_turn)
+		update_message("")
+		gui.set_enabled(gui.get_node("leave/bg"), false)
 		update_game(game, active_player, other_player, your_turn)
 		update_players(game, active_player, other_player, your_turn)
 	end)
+
+	xoxo.on_opponent_left(function()
+		msg.post(".", "acquire_input_focus")
+		gui.set_enabled(gui.get_node("leave/bg"), true)
+		update_message("Opponent left!")
+		for i=1,9 do
+			local node = gui.get_node("cell" .. i)
+			gui.set_enabled(node, false)
+		end
+	end)
+end
+
+function final(self)
+	xoxo.on_match_update(nil)
+	xoxo.on_opponent_left(nil)
 end
 
 
 function on_input(self, action_id, action)
-	local rematch = gui.get_node("rematch/bg")
-	if gui.is_enabled(rematch) then
-		gooey.button("rematch/bg", action_id, action, function()
-			gui.set_enabled(rematch, false)
+	local leave = gui.get_node("leave/bg")
+	if gui.is_enabled(leave) then
+		gooey.button("leave/bg", action_id, action, function()
+			gui.set_enabled(leave, false)
 			msg.post(".", "release_input_focus")
-			xoxo.request_rematch()
+			xoxo.leave_match()
+			monarch.back()
 		end)
 	else
 		if action_id == hash("touch") and action.released then

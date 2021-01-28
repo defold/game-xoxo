@@ -1,64 +1,38 @@
-local gamestate = require "xoxo.game.state"
+local game = require "xoxo.game.game"
 
 local M = {}
 
 local state = nil
 
-local function filename()
-	return sys.get_save_file("xoxo", "save")
-end
-
-function M.load()
-	state = sys.load(filename())
-	if not next(state) then
-		state = nil
-	end
-	return state
-end
-
-function M.save()
-	sys.save(filename(), state)
-end
-
-function M.delete()
-	sys.save(filename(), {})
-end
-
 function M.new_game()
-	state = gamestate.new_game()
-	M.save()
+	state = game.new_game()
 	return state
 end
 
 function M.add_player(player)
-	gamestate.add_player(state, player)
-	M.save()
+	game.add_player(state, player)
 	return state
 end
 
 function M.player_move(row, column)
 	assert(state, "No game state exists! Have you loaded or started a new game?")
-	local ok = gamestate.player_move(state, row, column)
-	if ok then
-		M.save()
-	end
-	return ok
+	return game.player_move(state, row, column)
 end
 
 function M.get_active_player()
-	return gamestate.get_active_player(state)
+	return game.get_active_player(state)
 end
 
 function M.get_other_player()
-	return gamestate.get_other_player(state)
+	return game.get_other_player(state)
 end
 
-function M.get_state()
+function M.state()
 	return state
 end
 
 function M.dump()
-	gamestate.dump(state)
+	game.dump(state)
 end
 
 

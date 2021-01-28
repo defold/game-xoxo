@@ -1,7 +1,5 @@
 local M = {}
 
-
-
 local function index_to_row_column(index)
 	local row = math.ceil(index / 3)
 	local column = 1 + ((index - 1) % 3)
@@ -76,14 +74,24 @@ function M.add_player(state, player_id)
 	state.players[#state.players + 1] = player_id
 end
 
+function M.player_count(state)
+	assert(state)
+	return #state.players
+end
+
 function M.player_move(state, row, column)
 	assert(state)
 	assert(#state.players == 2, "Game must have two players before a move can be made")
 	if state.cells[row][column] == -1 then
+		local player_index = state.player_turn
 		state.cells[row][column] = state.player_turn
 		state.player_turn = (state.player_turn == 1) and 2 or 1
 		state.draw = check_draw(state)
-		state.winner = check_winner(state)
+		if check_winner(state) then
+			state.winner = player_index
+		else
+			state.winner = false
+		end
 		return true, state
 	else
 		return false, state

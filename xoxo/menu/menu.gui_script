@@ -2,25 +2,32 @@ local monarch = require "monarch.monarch"
 local gooey = require "gooey.gooey"
 local xoxo = require "xoxo.xoxo"
 
-
 function init(self)
 	gui.set_render_order(15)
-
-	local play_button = gui.get_node("play/bg")
-	gui.set_enabled(play_button, false)
-	xoxo.join_match(function(success, message)
-		if success then
-			msg.post(".", "acquire_input_focus")
-			gui.set_enabled(play_button, true)
-		else
-			print(message)
-		end
-	end)
+	msg.post(".", "acquire_input_focus")
+	gui.set_enabled(gui.get_node("play/bg"), false)
+	gui.set_enabled(gui.get_node("join/bg"), true)
 end
 
 
 function on_input(self, action_id, action)
 	gooey.button("play/bg", action_id, action, function()
 		monarch.show(hash("game"))
+	end)
+	gooey.button("join/bg", action_id, action, function()
+		msg.post(".", "release_input_focus")
+		gui.set_text(gui.get_node("message"), "Finding a match")
+		gui.set_enabled(gui.get_node("join/bg"), false)
+		xoxo.join_match(function(success, message)
+			msg.post(".", "acquire_input_focus")
+			if success then
+				gui.set_text(gui.get_node("message"), "Found a match!")
+				gui.set_enabled(gui.get_node("play/bg"), true)
+			else
+				print(message)
+				gui.set_text(gui.get_node("message"), message)
+				gui.set_enabled(gui.get_node("join/bg"), true)
+			end
+		end)
 	end)
 end

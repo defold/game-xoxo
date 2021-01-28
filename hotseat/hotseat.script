@@ -13,6 +13,12 @@ local PLAYER2 = {
 	photo = "https://randomuser.me/api/portraits/med/lego/7.jpg",
 }
 
+local function start_new_game()
+	hotseat.new_game()
+	hotseat.add_player(PLAYER1)
+	hotseat.add_player(PLAYER2)
+	xoxo.match_update(hotseat.state(), hotseat.get_active_player(), hotseat.get_other_player(), true)
+end
 
 function init(self)
 	msg.post(".", "acquire_input_focus")
@@ -21,32 +27,35 @@ function init(self)
 	-- client has requested to join a match
 	xoxo.on_join_match(function(callback)
 		print("hotseat on_join_match")
-		hotseat.delete()
-		local state = hotseat.load()
-		if not state then
-			hotseat.new_game()
-			hotseat.add_player(PLAYER1)
-			hotseat.add_player(PLAYER2)
-		end
+		start_new_game()
 		callback(true)
-		xoxo.match_update(hotseat.load(), hotseat.get_active_player(), hotseat.get_other_player(), true)
 	end)
 
-	-- client has requested a rematch
-	xoxo.on_request_rematch(function()
-		print("hotseat on_request_rematch")
-		hotseat.new_game()
-		hotseat.add_player(PLAYER1)
-		hotseat.add_player(PLAYER2)
-		xoxo.match_update(hotseat.load(), hotseat.get_active_player(), hotseat.get_other_player(), true)
+	-- client has left the match
+	xoxo.on_leave_match(function()
+		print("hotseat on_leave_match")
+		xoxo.opponent_left()
 	end)
 
 	-- client has sent a move
 	xoxo.on_send_player_move(function(row, col)
 		print("hotseat on_send_player_move")
-		hotseat.player_move(row, col)
-		hotseat.dump()
-		xoxo.match_update(hotseat.load(), hotseat.get_active_player(), hotseat.get_other_player(), true)
+		local ok, state = hotseat.player_move(row, col)
+		xoxo.match_update(state, hotseat.get_active_player(), hotseat.get_other_player(), true)
+
+		-- start rematch countdown if the game is completed (win or draw)
+		if state.winner or state.draw then
+			state.rematch_countdown = 10
+			timer.delay(1, true, function(self, handle, time_elapsed)
+				state.rematch_countdown = state.rematch_countdown - time_elapsed
+				if state.rematch_countdown <= 0 then
+					timer.cancel(handle)
+					start_new_game()
+				else
+					xoxo.match_update(state, hotseat.get_active_player(), hotseat.get_other_player(), true)
+				end
+			end)
+		end
 	end)
 end
 
