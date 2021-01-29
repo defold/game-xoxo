@@ -67,5 +67,6 @@ function on_message(self, message_id, message, sender)
 	if message_id == hash("proxy_loaded") then
 		msg.post(sender, "init")
 		msg.post(sender, "enable")
+		go.delete("splash")
 	end
 end

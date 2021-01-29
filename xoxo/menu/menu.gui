@@ -335,8 +335,8 @@ nodes {
 }
 nodes {
   position {
-    x: 320.0
-    y: 541.0
+    x: 337.0
+    y: 500.0
     z: 0.0
     w: 1.0
   }
@@ -353,8 +353,8 @@ nodes {
     w: 1.0
   }
   size {
-    x: 140.0
-    y: 149.0
+    x: 160.0
+    y: 160.0
     z: 0.0
     w: 1.0
   }
@@ -375,17 +375,17 @@ nodes {
   layer: "below"
   inherit_alpha: true
   slice9 {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-    w: 0.0
+    x: 50.0
+    y: 50.0
+    z: 50.0
+    w: 50.0
   }
   clipping_mode: CLIPPING_MODE_NONE
   clipping_visible: true
   clipping_inverted: false
   alpha: 1.0
   template_node_child: false
-  size_mode: SIZE_MODE_AUTO
+  size_mode: SIZE_MODE_MANUAL
 }
 nodes {
   position {

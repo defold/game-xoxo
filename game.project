@@ -26,3 +26,12 @@ scale_mode = stretch
 show_fullscreen_button = 0
 show_made_with_defold = 0
 
+[android]
+package = com.defold.game.xoxo
+
+[osx]
+bundle_identifier = com.defold.game.xoxo
+
+[ios]
+bundle_identifier = com.defold.game.xoxo
+
