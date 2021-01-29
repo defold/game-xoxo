@@ -221,7 +221,7 @@ nodes {
   clipping_mode: CLIPPING_MODE_NONE
   clipping_visible: true
   clipping_inverted: false
-  alpha: 0.7
+  alpha: 1.0
   template_node_child: false
   size_mode: SIZE_MODE_AUTO
 }
@@ -1097,7 +1097,7 @@ nodes {
 nodes {
   position {
     x: 320.0
-    y: 268.0
+    y: 112.0
     z: 0.0
     w: 1.0
   }

@@ -22,7 +22,6 @@ end
 
 function init(self)
 	msg.post(".", "acquire_input_focus")
-	msg.post("#collectionproxy", "async_load")
 
 	-- client has requested to join a match
 	xoxo.on_join_match(function(callback)
@@ -60,6 +59,10 @@ function init(self)
 			end)
 		end
 		xoxo.match_update(state, hotseat.get_active_player(), hotseat.get_other_player(), true)
+	end)
+
+	timer.delay(2, false, function()
+		xoxo.connected()
 	end)
 end
 

@@ -89,7 +89,7 @@ function M.on_opponent_left(callback)
 end
 
 
-local on_send_player_move_fn
+local on_send_player_move_fn = nil
 -- called by backend proxy to subscribe to player move attempts
 function M.on_send_player_move(fn)
 	on_send_player_move_fn = fn
@@ -98,6 +98,14 @@ end
 function M.send_player_move(row, column)
 	assert(on_send_player_move_fn, "You must call xoxo.on_send_player_move() from your backend proxy")
 	on_send_player_move_fn(row, column)
+end
+
+local on_connected_fn = nil
+function M.on_connected(fn)
+	on_connected_fn = wrap(fn)
+end
+function M.connected()
+	on_connected_fn()
 end
 
 return M
