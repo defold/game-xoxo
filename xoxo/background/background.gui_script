@@ -1,0 +1,4 @@
+function init(self)
+	local version = sys.get_config("project.version", "?")
+	gui.set_text(gui.get_node("version"), version)
+end
