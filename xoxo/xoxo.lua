@@ -100,12 +100,26 @@ function M.send_player_move(row, column)
 	on_send_player_move_fn(row, column)
 end
 
+local connected = false
 local on_connected_fn = nil
 function M.on_connected(fn)
 	on_connected_fn = wrap(fn)
 end
 function M.connected()
+	connected = true
 	on_connected_fn()
 end
 
+local on_disconnected_fn = nil
+function M.on_disconnected(fn)
+	on_disconnected_fn = wrap(fn)
+end
+function M.disconnected()
+	connected = false
+	on_disconnected_fn()
+end
+
+function M.is_connected()
+	return connected
+end
 return M

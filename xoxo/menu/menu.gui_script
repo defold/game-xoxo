@@ -14,6 +14,17 @@ local function fadeout(node_name, delay, cb)
 	gui.animate(node, "color.w", 0, gui.EASING_OUTQUAD, 0.8, delay or 0, cb)
 end
 
+local function enable_buttons()
+	msg.post(".", "acquire_input_focus")
+	fadein("play/bg")
+	fadein("join/bg")
+	fadeout("message", 0, function()
+		gui.set_text(gui.get_node("message"), "")
+		fadein("message")
+	end)
+	gui.set_enabled(gui.get_node("join/bg"), true)
+end
+
 function init(self)
 	gui.set_render_order(15)
 	gui.set_enabled(gui.get_node("play/bg"), false)
@@ -27,16 +38,11 @@ function init(self)
 	fadein("madewith")
 	gui.set_text(gui.get_node("message"), "Please wait - connecting!")
 
-	xoxo.on_connected(function()
-		msg.post(".", "acquire_input_focus")
-		fadein("play/bg")
-		fadein("join/bg")
-		fadeout("message", 0, function()
-			gui.set_text(gui.get_node("message"), "")
-			fadein("message")
-		end)
-		gui.set_enabled(gui.get_node("join/bg"), true)
-	end)
+	if xoxo.is_connected() then
+		enable_buttons()
+	else
+		xoxo.on_connected(enable_buttons)
+	end
 end
 
 
