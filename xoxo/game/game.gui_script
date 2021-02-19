@@ -1,11 +1,15 @@
 local monarch = require "monarch.monarch"
 local gooey = require "gooey.gooey"
 local xoxo = require "xoxo.xoxo"
-local file = require "ludobits.m.io.file"
 
 local TEXTURE1_ID = "player1_photo"
 local TEXTURE2_ID = "player2_photo"
 
+local function fix_filename(filename)
+	filename = filename:gsub("([^0-9a-zA-Z%._ ])", function(c) return string.format("%%%02X", string.byte(c)) end)
+	filename = filename:gsub(" ", "+")
+	return filename
+end
 
 local function index_to_row_column(index)
 	local row = math.ceil(index / 3)
@@ -43,7 +47,7 @@ local function refresh_player(player, photo_node, name_node, texture_id)
 	gui.set_text(name_node, player and player.name or "")
 	if player and player.photo and player.photo ~= "" then
 		http.request(player.photo, "GET", function(self, id, response)
-			local filename = sys.get_save_file("xoxo", file.fix(player.photo))
+			local filename = sys.get_save_file("xoxo", fix_filename(player.photo))
 			if response.status == 200 then
 				save_file(filename, response.response)
 				set_photo(response.response, texture_id)
