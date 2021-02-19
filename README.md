@@ -3,4 +3,4 @@ This is a Tic Tac Toe game made in Defold an intended for testing of different s
 
 ![](screenshot.png)
 
-Try a hotseat (serverless) version of the game here: http://defold.com/game-xoxo/.
+Try a hotseat (serverless) version of the game here: https://defold.com/game-xoxo/.
