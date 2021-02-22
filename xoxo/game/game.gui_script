@@ -43,7 +43,8 @@ local function set_photo(data, texture_id)
 	gui.set_texture_data(texture_id, img.width, img.height, "rgb", img.buffer, false)
 end
 
-local function refresh_player(player, photo_node, name_node, texture_id)
+local function refresh_player(player, photo_node, placeholder_node, name_node, texture_id)
+	gui.set_enabled(photo_node, true)
 	gui.set_text(name_node, player and player.name or "")
 	if player and player.photo and player.photo ~= "" then
 		http.request(player.photo, "GET", function(self, id, response)
@@ -52,11 +53,13 @@ local function refresh_player(player, photo_node, name_node, texture_id)
 				save_file(filename, response.response)
 				set_photo(response.response, texture_id)
 				gui.set_enabled(photo_node, true)
+				gui.set_enabled(placeholder_node, false)
 			elseif response.status == 304 then
 				local data = load_file(filename)
 				if data then
 					set_photo(data, texture_id)
 					gui.set_enabled(photo_node, true)
+					gui.set_enabled(placeholder_node, false)
 				end
 			end
 		end)
@@ -65,8 +68,8 @@ end
 
 
 local function update_players(game, active_player, other_player, your_turn)
-	refresh_player(game.players[1], gui.get_node("player1_photo"), gui.get_node("player1_name"), TEXTURE1_ID)
-	refresh_player(game.players[2], gui.get_node("player2_photo"), gui.get_node("player2_name"), TEXTURE2_ID)
+	refresh_player(game.players[1], gui.get_node("player1_photo"), gui.get_node("player1_photo_placeholder"), gui.get_node("player1_name"), TEXTURE1_ID)
+	refresh_player(game.players[2], gui.get_node("player2_photo"), gui.get_node("player2_photo_placeholder"), gui.get_node("player2_name"), TEXTURE2_ID)
 end
 
 local function update_cells(game)
