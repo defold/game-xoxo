@@ -109,11 +109,24 @@ local function update_game(game, active_player, other_player, your_turn)
 	end
 end
 
-local function play_in_cell(index)
+local function play_in_cell(cell_index, player_index)
 	msg.post(".", "release_input_focus")
 	update_message("Sending your move")
 
-	local row, column = index_to_row_column(index)
+	local row, column = index_to_row_column(cell_index)
+	
+	-- set symbol to give immediate feedback to user
+	local url = msg.url(nil, "cell" .. cell_index, "symbol")
+	local node = gui.get_node("cell" .. cell_index)
+	if player_index == 1 then
+		gui.set_enabled(node, true)
+		gui.play_flipbook(node, hash("o"))
+	elseif player_index == 2 then
+		gui.set_enabled(node, true)
+		gui.play_flipbook(node, hash("x"))
+	end
+
+	-- send move
 	xoxo.send_player_move(row, column)
 end
 
@@ -142,6 +155,7 @@ function init(self)
 	gui.set_enabled(gui.get_node("leave/bg"), false)
 		
 	xoxo.on_match_update(function(game, active_player, other_player, your_turn)
+		self.game = game
 		update_message("")
 		gui.set_enabled(gui.get_node("leave/bg"), false)
 		update_game(game, active_player, other_player, your_turn)
@@ -178,7 +192,7 @@ function on_input(self, action_id, action)
 		if action_id == hash("touch") and action.released then
 			for i=1,9 do
 				if gui.pick_node(gui.get_node("cell" .. i), action.x, action.y) then
-					play_in_cell(i)
+					play_in_cell(i, self.game.player_turn)
 					return true
 				end
 			end
