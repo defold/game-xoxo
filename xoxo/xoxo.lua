@@ -101,13 +101,35 @@ function M.send_player_move(row, column)
 end
 
 local connected = false
+-- called by xoxo to get notified when backend has been connected
 local on_connected_fn = nil
+local on_reconnected_fn = nil
 function M.on_connected(fn)
 	on_connected_fn = wrap(fn)
+end
+function M.on_reconnected(fn)
+	on_reconnected_fn = wrap(fn)
 end
 function M.connected()
 	connected = true
 	on_connected_fn()
+end
+function M.reconnected()
+	connected = true
+	on_reconnected_fn()
+end
+
+
+-- called by backend proxy to get notified when it should connect
+local on_connect_fn = nil
+function M.on_connect(fn)
+	on_connect_fn = wrap(fn)
+end
+
+-- called by xoxo when requesting backend proxy to connect
+function M.connect()
+	assert(on_connect_fn, "You must call xoxo.on_connect() from your backend proxy")
+	on_connect_fn()
 end
 
 local on_disconnected_fn = nil

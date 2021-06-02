@@ -34,6 +34,10 @@ local function on_ready_to_join(message)
 	show_message(message or "")
 end
 
+local function on_start_game()
+	monarch.show(hash("game"))
+end
+
 function init(self)
 	gui.set_render_order(15)
 	disable("play/bg")
@@ -50,13 +54,15 @@ function init(self)
 		on_ready_to_join()
 	else
 		xoxo.on_connected(on_ready_to_join)
+		xoxo.on_reconnected(on_start_game)
+		xoxo.connect()
 	end
 end
 
 
 function on_input(self, action_id, action)
 	gooey.button("play/bg", action_id, action, function()
-		monarch.show(hash("game"))
+		on_start_game()
 	end)
 	gooey.button("join/bg", action_id, action, function()
 		msg.post(".", "release_input_focus")

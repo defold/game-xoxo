@@ -23,6 +23,11 @@ end
 function init(self)
 	msg.post(".", "acquire_input_focus")
 
+	-- client has requested to connect
+	xoxo.on_connect(function()
+		xoxo.connected()
+	end)
+
 	-- client has requested to join a match
 	xoxo.on_join_match(function(callback)
 		print("hotseat on_join_match")
@@ -59,10 +64,6 @@ function init(self)
 			end)
 		end
 		xoxo.match_update(state, hotseat.get_active_player(), hotseat.get_other_player(), true)
-	end)
-
-	timer.delay(2, false, function()
-		xoxo.connected()
 	end)
 end
 
