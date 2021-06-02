@@ -28,7 +28,6 @@ end
 
 local function on_ready_to_join(message)
 	msg.post(".", "acquire_input_focus")
-	fadein("play/bg")
 	fadein("join/bg")
 	enable("join/bg")
 	show_message(message or "")
@@ -40,7 +39,6 @@ end
 
 function init(self)
 	gui.set_render_order(15)
-	disable("play/bg")
 	disable("join/bg")
 	fadein("logo1")
 	fadein("logo2")
@@ -61,34 +59,27 @@ end
 
 
 function on_input(self, action_id, action)
-	gooey.button("play/bg", action_id, action, function()
-		on_start_game()
-	end)
 	gooey.button("join/bg", action_id, action, function()
 		msg.post(".", "release_input_focus")
 		disable("join/bg")
 
-		local timeout = 60
-		show_message(("Finding a match... %ds"):format(timeout))
+		local count = 0
+		show_message("Finding a match")
 		local timeout_handle = timer.delay(1, true, function(self, handle, time_elapsed)
-			timeout = timeout - 1
-			if timeout == 0 then
-				timer.cancel(handle)
-				on_ready_to_join("Timeout finding a match. Try again?")
+			count = (count + 1) % 10
+			if count == 0 then
+				show_message("Finding a match")
 			else
-				show_message(("Finding a match... %ds"):format(timeout))
+				show_message(string.rep(".", count))
 			end
 		end)
 
 		xoxo.join_match(function(success, message)
-			if timeout == 0 then
-				return
-			end
 			msg.post(".", "acquire_input_focus")
 			timer.cancel(timeout_handle)
 			if success then
 				show_message("Found a match!")
-				enable("play/bg")
+				on_start_game()
 			else
 				print(message)
 				on_ready_to_join(message)
