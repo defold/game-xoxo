@@ -72,6 +72,12 @@ local function update_players(game, active_player, other_player, your_turn)
 	refresh_player(game.players[2], gui.get_node("player2_photo"), gui.get_node("player2_photo_placeholder"), gui.get_node("player2_name"), TEXTURE2_ID)
 end
 
+local function hide_cells()
+	for i=1,9 do
+		gui.set_enabled(gui.get_node("cell" .. i), false)
+	end
+end
+
 local function update_cells(game)
 	for i=1,9 do
 		local row, column = index_to_row_column(i)
@@ -137,8 +143,9 @@ end
 function init(self)
 	gui.set_render_order(15)
 
-	local data = monarch.data(hash("game"))
+	update_message("Loading game")
 
+	-- init player avatars
 	local ok = gui.new_texture(TEXTURE1_ID, 120, 120, "rgb", (string.char(0xff) .. string.char(0x80) .. string.char(0x10)):rep(120*120), false)
 	if not ok then
 		print("Unable to create player1 texture")
@@ -154,9 +161,10 @@ function init(self)
 	gui.set_texture(player2_photo, TEXTURE2_ID)
 	gui.set_enabled(player2_photo, false)
 
-	update_message("")
+	-- hide button and cells
 	gui.set_enabled(gui.get_node("leave/bg"), false)
-		
+	hide_cells()
+
 	xoxo.on_match_update(function(game, active_player, other_player, your_turn)
 		self.game = game
 		update_message("")
@@ -173,6 +181,7 @@ function init(self)
 			local node = gui.get_node("cell" .. i)
 			gui.set_enabled(node, false)
 		end
+		hide_cells()
 	end)
 end
 
