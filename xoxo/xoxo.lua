@@ -20,7 +20,7 @@ function M.join_match(callback)
 	callback = wrap(callback)
 	on_join_match_fn(function(success, message)
 		assert(success ~= nil)
-		assert(success or mesage)
+		assert(success or message)
 		callback(success, message)
 	end)
 end
