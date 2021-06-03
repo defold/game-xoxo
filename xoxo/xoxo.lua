@@ -101,22 +101,30 @@ function M.send_player_move(row, column)
 end
 
 local connected = false
--- called by xoxo to get notified when backend has been connected
-local on_connected_fn = nil
-local on_reconnected_fn = nil
-function M.on_connected(fn)
-	on_connected_fn = wrap(fn)
+local on_show_menu_fn = nil
+local on_show_game_fn = nil
+
+-- called by xoxo to get notified that it should navigate to the menu
+function M.on_show_menu(fn)
+	on_show_menu_fn = wrap(fn)
 end
-function M.on_reconnected(fn)
-	on_reconnected_fn = wrap(fn)
+-- called by xoxo to get notified that it should navigate to the game
+function M.on_show_game(fn)
+	on_show_game_fn = wrap(fn)
 end
-function M.connected()
+
+-- called by backend proxy when connected and ready to transition to the menu
+function M.show_menu()
 	connected = true
-	on_connected_fn()
+	on_show_menu_fn()
 end
-function M.reconnected()
+
+-- called by backend proxy when connected and ready to transition to the game
+-- this is used in reconnected or other cases when the game is started with an
+-- active game
+function M.show_game()
 	connected = true
-	on_reconnected_fn()
+	on_show_game_fn()
 end
 
 
@@ -133,9 +141,11 @@ function M.connect()
 end
 
 local on_disconnected_fn = nil
+-- called by xoxo to get notified when the connection has been disconnected
 function M.on_disconnected(fn)
 	on_disconnected_fn = wrap(fn)
 end
+-- called by the backend proxy when it has disconnected
 function M.disconnected()
 	connected = false
 	on_disconnected_fn()

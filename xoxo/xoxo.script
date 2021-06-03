@@ -1,14 +1,19 @@
 local monarch = require "monarch.monarch"
+local xoxo = require "xoxo.xoxo"
 
 function init(self)
-	msg.post("#", "initialize")
 	msg.post("@render:", "clear_color", { color = vmath.vector4(0.1, 0.1, 0.1, 1.0) })
 	msg.post("#", "ready")
 end
 
-
 function on_message(self, message_id, message, sender)
 	if message_id == hash("ready") then
-		monarch.show(hash("menu"))
+		xoxo.on_show_menu(function()
+			monarch.show(hash("menu"))
+		end)
+		xoxo.on_show_game(function()
+			monarch.show(hash("game"))
+		end)
+		xoxo.connect()
 	end
 end

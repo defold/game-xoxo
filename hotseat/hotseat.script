@@ -25,7 +25,7 @@ function init(self)
 
 	-- client has requested to connect
 	xoxo.on_connect(function()
-		xoxo.connected()
+		xoxo.show_menu()
 	end)
 
 	-- client has requested to join a match
