@@ -102,6 +102,8 @@ local function show_game_over(message, rematch_countdown)
 	gui.set_enabled(gui.get_node("leave/bg"), true)
 	if rematch_countdown then
 		update_message(("%s - New match starting in %d seconds"):format(message, math.ceil(rematch_countdown)))
+	else
+		update_message(message)
 	end
 end
 
