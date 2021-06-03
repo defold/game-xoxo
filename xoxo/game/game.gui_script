@@ -100,7 +100,9 @@ end
 local function show_game_over(message, rematch_countdown)
 	msg.post(".", "acquire_input_focus")
 	gui.set_enabled(gui.get_node("leave/bg"), true)
-	update_message(("%s - New match starting in %d seconds"):format(message, math.ceil(rematch_countdown)))
+	if rematch_countdown then
+		update_message(("%s - New match starting in %d seconds"):format(message, math.ceil(rematch_countdown)))
+	end
 end
 
 
@@ -139,7 +141,6 @@ local function play_in_cell(cell_index, player_index)
 	xoxo.send_player_move(row, column)
 end
 
-
 function init(self)
 	gui.set_render_order(15)
 
@@ -177,10 +178,6 @@ function init(self)
 		msg.post(".", "acquire_input_focus")
 		gui.set_enabled(gui.get_node("leave/bg"), true)
 		update_message("Opponent left!")
-		for i=1,9 do
-			local node = gui.get_node("cell" .. i)
-			gui.set_enabled(node, false)
-		end
 		hide_cells()
 	end)
 end
