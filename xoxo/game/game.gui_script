@@ -29,6 +29,20 @@ local function save_file(filename, data)
 	end
 end
 
+local function create_rgb(width, height)
+	return (string.char(0xff) .. string.char(0x80) .. string.char(0x10)):rep(width * height)
+end
+
+local function set_image(texture_id, node, buffer, width, height)
+	local ok = gui.new_texture(texture_id, width, height, "rgb", buffer, false)
+	if not ok then
+		print("Unable to create texture", texture_id)
+	else
+		gui.set_texture(node, texture_id)
+	end
+	gui.set_enabled(node, false)
+end
+
 local function load_file(filename)
 	local f, ok = io.open(filename, "rb")
 	if f then
@@ -38,9 +52,10 @@ local function load_file(filename)
 	end
 end
 
-local function set_photo(data, texture_id)
+local function set_photo(node, data, texture_id)
 	local img = image.load(data)
-	gui.set_texture_data(texture_id, img.width, img.height, "rgb", img.buffer, false)
+	gui.delete_texture(texture_id)
+	set_image(texture_id, node, img.buffer, img.width, img.height)
 end
 
 local function refresh_player(player, photo_node, placeholder_node, name_node, texture_id)
@@ -57,7 +72,7 @@ local function refresh_player(player, photo_node, placeholder_node, name_node, t
 			elseif response.status == 304 then
 				local data = load_file(filename)
 				if data then
-					set_photo(data, texture_id)
+					set_photo(photo_node, data, texture_id)
 					gui.set_enabled(photo_node, true)
 					gui.set_enabled(placeholder_node, false)
 				end
@@ -149,21 +164,13 @@ function init(self)
 	update_message("Loading game")
 
 	-- init player avatars
-	local ok = gui.new_texture(TEXTURE1_ID, 120, 120, "rgb", (string.char(0xff) .. string.char(0x80) .. string.char(0x10)):rep(120*120), false)
-	if not ok then
-		print("Unable to create player1 texture")
-	end
-	local ok = gui.new_texture(TEXTURE2_ID, 120, 120, "rgb", (string.char(0xff) .. string.char(0x80) .. string.char(0x10)):rep(120*120), false)
-	if not ok then
-		print("Unable to create player2 texture")
-	end
+	local w = 150
+	local h = 150
 	local player1_photo = gui.get_node("player1_photo")
+	set_image(TEXTURE1_ID, player1_photo, create_rgb(w, h), w, h)
 	local player2_photo = gui.get_node("player2_photo")
-	gui.set_texture(player1_photo, TEXTURE1_ID)
-	gui.set_enabled(player1_photo, false)
-	gui.set_texture(player2_photo, TEXTURE2_ID)
-	gui.set_enabled(player2_photo, false)
-
+	set_image(TEXTURE2_ID, player2_photo, create_rgb(w, h), w, h)
+	
 	-- hide button and cells
 	gui.set_enabled(gui.get_node("leave/bg"), false)
 	hide_cells()
