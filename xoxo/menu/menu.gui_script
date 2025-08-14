@@ -48,15 +48,28 @@ function init(self)
 	fadein("madewith")
 	show_message("Please wait - connecting!")
 
+	local url = msg.url()
 	if xoxo.is_connected() then
-		on_ready_to_join()
+		msg.post(url, "ON_CONNECTED")
 	else
-		xoxo.on_connected(on_ready_to_join)
-		xoxo.on_reconnected(on_start_game)
+		xoxo.on_connected(function()
+			msg.post(url, "ON_CONNECTED")
+		end)
+		xoxo.on_reconnected(function()
+			msg.post(url, "ON_RECONNECTED")
+		end)
 		xoxo.connect()
 	end
 end
 
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("ON_CONNECTED") then
+		on_ready_to_join()
+	elseif message_id == hash("ON_RECONNECTED") then
+		on_start_game()
+	end
+end
 
 function on_input(self, action_id, action)
 	gooey.button("join/bg", action_id, action, function()

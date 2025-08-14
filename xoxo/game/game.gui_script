@@ -168,19 +168,18 @@ function init(self)
 	gui.set_enabled(gui.get_node("leave/bg"), false)
 	hide_cells()
 
+	local url = msg.url()
 	xoxo.on_match_update(function(game, active_player, other_player, your_turn)
-		self.game = game
-		update_message("")
-		gui.set_enabled(gui.get_node("leave/bg"), false)
-		update_game(game, active_player, other_player, your_turn)
-		update_players(game, active_player, other_player, your_turn)
+		msg.post(url, "ON_MATCH_UPDATE", {
+			game = game,
+			active_player = active_player,
+			other_player = other_player,
+			your_turn = your_turn
+		})
 	end)
 
 	xoxo.on_opponent_left(function()
-		msg.post(".", "acquire_input_focus")
-		gui.set_enabled(gui.get_node("leave/bg"), true)
-		update_message("Opponent left!")
-		hide_cells()
+		msg.post(url, "ON_OPPONENT_LEFT")
 	end)
 end
 
@@ -189,6 +188,20 @@ function final(self)
 	xoxo.on_opponent_left(nil)
 end
 
+function on_message(self, message_id, message, sender)
+	if message_id == hash("ON_MATCH_UPDATE") then
+		self.game = message.game
+		update_message("")
+		gui.set_enabled(gui.get_node("leave/bg"), false)
+		update_game(message.game, message.active_player, message.other_player, message.your_turn)
+		update_players(message.game, message.active_player, message.other_player, message.your_turn)
+	elseif message_id == hash("ON_OPPONENT_LEFT") then
+		msg.post(".", "acquire_input_focus")
+		gui.set_enabled(gui.get_node("leave/bg"), true)
+		update_message("Opponent left!")
+		hide_cells()
+	end
+end
 
 function on_input(self, action_id, action)
 	local leave = gui.get_node("leave/bg")
