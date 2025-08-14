@@ -1,6 +1,7 @@
 [project]
 title = XOXO
-dependencies = https://github.com/britzl/gooey/archive/9.1.1.zip,https://github.com/britzl/monarch/archive/3.2.2.zip
+dependencies#0 = https://github.com/britzl/gooey/archive/10.5.0.zip
+dependencies#1 = https://github.com/britzl/monarch/archive/5.1.1.zip
 
 [bootstrap]
 main_collection = /hotseat/hotseat.collectionc
