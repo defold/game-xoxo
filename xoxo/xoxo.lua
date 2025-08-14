@@ -1,11 +1,7 @@
 local M = {}
 
 local function wrap(callback)
-	local instance = script.get_instance()
-	return function(...)
-		script.set_instance(instance)
-		callback(...)
-	end
+	return callback
 end
 
 
